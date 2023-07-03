@@ -30,15 +30,15 @@ resource "aws_security_group" "main" {
 
 resource "aws_docdb_cluster" "main" {
   cluster_identifier              = "${var.name}-${var.env}"
-  engine                          = var.engine
+  engine                          = "docdb"
   engine_version                  = var.engine_version
   master_username                 = data.aws_ssm_parameter.db_user.value
   master_password                 = data.aws_ssm_parameter.db_pass.value
   skip_final_snapshot             = true
-  storage_encrypted               = true
-  db_subnet_group_name            = aws_docdb_subnet_group.main.id
+  db_subnet_group_name            = aws_docdb_subnet_group.main.name
   db_cluster_parameter_group_name = aws_docdb_cluster_parameter_group.main.name
-  vpc_security_group_ids          = [aws_docdb_subnet_group.main.id]
+  storage_encrypted               = true
+  vpc_security_group_ids          = [aws_security_group.main.id]
   kms_key_id                      = var.kms_arn
   port                            = var.port
   tags                            = merge(var.tags, { Name = "${var.name}-${var.env}" })
