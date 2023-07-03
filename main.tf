@@ -29,18 +29,19 @@ resource "aws_security_group" "main" {
 }
 
 resource "aws_docdb_cluster" "main" {
-  engine                 = var.engine
-  engine_version         = var.engine_version
-  cluster_identifier     = "${var.name}-${var.env}"
-  master_username        = data.aws_ssm_parameter.db_user.value
-  master_password        = data.aws_ssm_parameter.db_pass.value
-  skip_final_snapshot    = true
-  storage_encrypted      = true
-  kms_key_id             = var.kms_arn
-  db_subnet_group_name   = aws_docdb_subnet_group.main.id
-  vpc_security_group_ids = [aws_docdb_subnet_group.main.id]
-  port                   = var.port
-  tags                   = merge(var.tags, { Name = "${var.name}-${var.env}" })
+  cluster_identifier              = "${var.name}-${var.env}"
+  engine                          = var.engine
+  engine_version                  = var.engine_version
+  master_username                 = data.aws_ssm_parameter.db_user.value
+  master_password                 = data.aws_ssm_parameter.db_pass.value
+  skip_final_snapshot             = true
+  storage_encrypted               = true
+  db_subnet_group_name            = aws_docdb_subnet_group.main.id
+  db_cluster_parameter_group_name = aws_docdb_cluster_parameter_group.main.name
+  vpc_security_group_ids          = [aws_docdb_subnet_group.main.id]
+  kms_key_id                      = var.kms_arn
+  port                            = var.port
+  tags                            = merge(var.tags, { Name = "${var.name}-${var.env}" })
 }
 
 resource "aws_docdb_cluster_instance" "cluster_instance" {
